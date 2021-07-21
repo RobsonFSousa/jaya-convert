@@ -1,7 +1,7 @@
 package controller
 
 import io.javalin.http.Context
-
+import service.ConversionService
 
 object ConversionController {
     fun convert(ctx: Context) {
@@ -9,6 +9,8 @@ object ConversionController {
     }
 
     fun listAll(ctx: Context) {
-        //TODO
+        val conversionService = ConversionService()
+        val conversions = conversionService.listAll()
+        ctx.json(conversions)
     }
 }
