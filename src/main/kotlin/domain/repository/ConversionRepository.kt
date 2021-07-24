@@ -13,7 +13,6 @@ internal object Conversions : LongIdTable() {
     val from: Column<String> = char(" from", 3)
     val fromValue: Column<Double> = double("from_value")
     val to: Column<String> = char(" to", 3)
-    val toValue: Column<Double> = double("to_value")
     val rate: Column<Double> = double("rate")
     val createdAt = datetime("created_at").clientDefault{ LocalDateTime.now() }
 
@@ -24,7 +23,7 @@ internal object Conversions : LongIdTable() {
             from = row[Conversions.from].toString(),
             fromValue = row[Conversions.fromValue].toDouble(),
             to = row[Conversions.to].toString(),
-            toValue = row[Conversions.toValue].toDouble(),
+            toValue = row[Conversions.fromValue].toDouble() * row[Conversions.rate].toDouble(),
             rate = row[Conversions.rate].toDouble(),
             createdAt = row[Conversions.createdAt],
         )
@@ -46,7 +45,6 @@ class ConversionRepository(private val dataSource: DataSource) {
                 row[Conversions.from] = conversion.from
                 row[Conversions.fromValue] = conversion.fromValue
                 row[Conversions.to] = conversion.to
-                row[Conversions.toValue] = conversion.toValue
                 row[Conversions.rate] = conversion.rate
                 row[Conversions.createdAt] = LocalDateTime.now()
             }.value
@@ -55,14 +53,14 @@ class ConversionRepository(private val dataSource: DataSource) {
         return findById(newId)
     }
 
-    fun findAll(): List<Conversion> {
+    fun findByUser(user: Long): List<Conversion> {
         return transaction(Database.connect(dataSource)) {
-            Conversions.selectAll()
+            Conversions.select { Conversions.user eq user }
                 .map { Conversions.toDomain(it) }
         }
     }
 
-    fun findById(id: Long): Conversion? {
+    private fun findById(id: Long): Conversion? {
         return transaction(Database.connect(dataSource)) {
             Conversions.select { Conversions.id eq id }
                 .map { Conversions.toDomain(it) }

@@ -10,7 +10,7 @@ import org.http4k.client.ApacheClient
 import org.http4k.core.Method
 import org.http4k.core.Request
 
-class ConversionService(val conversionRepository: ConversionRepository) {
+class ConversionService(private val conversionRepository: ConversionRepository) {
     fun create(conversion: Conversion): Conversion? {
         if (!hasRate(conversion.from) || !hasRate(conversion.to)) {
             throw BadRequestResponse("Invalid currency")
@@ -18,13 +18,16 @@ class ConversionService(val conversionRepository: ConversionRepository) {
 
         val requestAPI = getRequestAPI()
         conversion.rate = getRate(conversion.to, requestAPI.rates) / getRate(conversion.from, requestAPI.rates)
-        conversion.toValue = round(conversion.fromValue * conversion.rate)
 
-        return conversionRepository.create(conversion)
+        val newConversion = conversionRepository.create(conversion)
+        if (newConversion != null) {
+            newConversion.toValue = newConversion.fromValue * newConversion.rate
+        }
+        return newConversion
     }
 
-    fun all(): List<Conversion> {
-        return conversionRepository.findAll()
+    fun findByUser(user: Long): List<Conversion> {
+        return conversionRepository.findByUser(user)
     }
 
     private fun hasRate(rate: String): Boolean {
@@ -32,7 +35,7 @@ class ConversionService(val conversionRepository: ConversionRepository) {
         return rates.contains(rate);
     }
 
-    fun getRequestAPI(): RequestAPI {
+    private fun getRequestAPI(): RequestAPI {
         val client = ApacheClient()
 
         val request = Request(Method.GET, "http://api.exchangeratesapi.io/v1/latest")
@@ -40,21 +43,16 @@ class ConversionService(val conversionRepository: ConversionRepository) {
             .query("base", "EUR")
 
         val gson = Gson()
-        val res = gson.fromJson(client(request).bodyString(), RequestAPI::class.java)
-        return res
+        return gson.fromJson(client(request).bodyString(), RequestAPI::class.java)
     }
 
-    fun getRate(currency: String, rates: Rate): Double {
-        when (currency) {
-            "EUR" -> return rates.EUR.toDouble()
-            "USD" -> return rates.USD.toDouble()
-            "BRL" -> return rates.BRL.toDouble()
-            "JPY" -> return rates.JPY.toDouble()
-            else -> return 0.0
+    private fun getRate(currency: String, rates: Rate): Double {
+        return when (currency) {
+            "EUR" -> rates.EUR.toDouble()
+            "USD" -> rates.USD.toDouble()
+            "BRL" -> rates.BRL.toDouble()
+            "JPY" -> rates.JPY.toDouble()
+            else -> 0.0
         }
-    }
-
-    private fun round(value: Double): Double {
-        return Math.round(value * 10.00) / 10.00
     }
 }

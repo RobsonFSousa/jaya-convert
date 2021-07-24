@@ -1,8 +1,8 @@
 package config
 
-import Router
-import controller.ConversionController
-import controller.UserController
+import web.Router
+import web.controller.ConversionController
+import web.controller.UserController
 import domain.repository.ConversionRepository
 import domain.repository.UserRepository
 import domain.service.ConversionService

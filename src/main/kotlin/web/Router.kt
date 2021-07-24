@@ -1,12 +1,14 @@
-import controller.ConversionController
-import controller.UserController
+package web
+
+import web.controller.ConversionController
+import web.controller.UserController
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder.*
 import org.koin.standalone.KoinComponent
 
 class Router(
     private val userController: UserController,
-    private val conversionContoller: ConversionController,
+    private val conversionController: ConversionController,
 ) : KoinComponent {
 
     fun register(app: Javalin) {
@@ -17,8 +19,10 @@ class Router(
             }
 
             path("v1/conversions") {
-                get(conversionContoller::all)
-                post(conversionContoller::create)
+                post(conversionController::create)
+                path(":user") {
+                    get(conversionController::findByUser)
+                }
             }
         }
     }

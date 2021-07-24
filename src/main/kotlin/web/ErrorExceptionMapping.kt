@@ -1,3 +1,5 @@
+package web
+
 import io.javalin.Javalin
 import io.javalin.http.*
 import org.eclipse.jetty.http.HttpStatus
@@ -22,10 +24,10 @@ object ErrorExceptionMapping {
             ctx.json(error).status(HttpStatus.INTERNAL_SERVER_ERROR_500)
         }
 
-        app.exception(BadRequestResponse::class.java) { _, ctx ->
+        app.exception(BadRequestResponse::class.java) { e, ctx ->
             LOG.warn("BadRequestResponse occurred for request: ${ctx.url()}")
-            val error = ErrorResponse(mapOf("body" to listOf("can't be empty or invalid")))
-            ctx.json(error).status(HttpStatus.UNPROCESSABLE_ENTITY_422)
+            val error = ErrorResponse(mapOf("body" to listOf(e.message)))
+            ctx.json(error).status(HttpStatus.BAD_REQUEST_400)
         }
 
         app.exception(NotFoundResponse::class.java) { _, ctx ->
