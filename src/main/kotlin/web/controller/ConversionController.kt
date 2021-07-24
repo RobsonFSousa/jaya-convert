@@ -4,6 +4,7 @@ import domain.ConversionDTO
 import domain.ConversionsDTO
 import domain.service.ConversionService
 import io.javalin.http.Context
+import org.eclipse.jetty.http.HttpStatus
 
 
 class ConversionController(private val conversionService: ConversionService) {
@@ -18,6 +19,7 @@ class ConversionController(private val conversionService: ConversionService) {
             .get().conversion?.also { conversion ->
                 conversionService.create(conversion).apply {
                     ctx.json(ConversionDTO(this))
+                    ctx.status(HttpStatus.CREATED_201)
                 }
             }
     }
