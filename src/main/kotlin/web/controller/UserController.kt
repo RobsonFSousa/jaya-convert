@@ -1,4 +1,4 @@
-package controller
+package web.controller
 
 import domain.UserDTO
 import io.javalin.http.Context

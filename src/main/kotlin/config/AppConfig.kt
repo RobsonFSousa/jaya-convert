@@ -1,6 +1,6 @@
 package config
 
-import Router
+import web.Router
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module
@@ -15,6 +15,7 @@ import org.koin.standalone.getProperty
 import org.koin.standalone.inject
 import java.text.SimpleDateFormat
 import config.ModulesConfig.allModules
+import web.ErrorExceptionMapping
 
 class AppConfig : KoinComponent {
     private val router: Router by inject()
@@ -42,7 +43,7 @@ class AppConfig : KoinComponent {
             }
         }
         router.register(app)
-        //ErrorExceptionMapping.register(app)
+        ErrorExceptionMapping.register(app)
         return app
     }
 
