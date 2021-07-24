@@ -1,0 +1,82 @@
+openapi: 3.0.0
+info:
+  title: Conversor de moedas
+  description:
+    Documentação da API jaya-convert
+    https://github.com/RobsonFSousa/jaya-convert
+  contact: {}
+  version: '1.0'
+servers:
+  - url: 'http://localhost:7000/api/'
+    variables: {}
+paths:
+  /v1/conversions:
+    post:
+      tags:
+        - Conversion
+      summary: Converter moeda
+      operationId: Conversion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Conversion'
+            example:
+              conversion:
+                user: 1
+                from: 'EUR'
+                fromValue: 5
+                to: 'BRL'
+        required: true
+        x-send-file-in-body: false
+      responses:
+        '201':
+          description: ''
+          headers: {}
+      deprecated: false
+  '/v1/conversions/{user}':
+    get:
+      tags:
+        - ConversionsByUser
+      summary: Listar conversões de moedas por usuário
+      operationId: ConversionsByUser
+      parameters:
+        - name: user
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+components:
+  schemas:
+    Conversion:
+      title: Conversion
+      required:
+        - user
+        - from
+        - fromValue
+        - to
+      type: object
+      properties:
+        user:
+          type: long
+        from:
+          type: string
+        fromValue:
+          type: double
+        to:
+          type: string
+      example:
+        conversion:
+          user: '{{USER}}'
+          from: '{{FROM}}'
+          fromValue: '{{FROM_VALUE}}'
+          to: '{{TO}}'
+tags:
+  - name: Conversion
+  - name: ConversionsByUser
