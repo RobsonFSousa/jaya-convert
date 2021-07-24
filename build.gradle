@@ -6,6 +6,10 @@ plugins {
 group 'org.tech.jaya'
 version '1.0-SNAPSHOT'
 
+apply plugin: 'kotlin'
+apply plugin: 'application'
+mainClassName = "AppKt"
+
 repositories {
     mavenCentral()
     jcenter()
