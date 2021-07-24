@@ -42,7 +42,7 @@ class AppConfig : KoinComponent {
             }
         }
         router.register(app)
-        //ErrorExceptionMapping.register(app)
+        ErrorExceptionMapping.register(app)
         return app
     }
 

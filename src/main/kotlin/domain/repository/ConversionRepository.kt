@@ -11,8 +11,10 @@ import javax.sql.DataSource
 internal object Conversions : LongIdTable() {
     val user: Column<Long> = long("user")
     val from: Column<String> = char(" from", 3)
+    val fromValue: Column<Double> = double("from_value")
     val to: Column<String> = char(" to", 3)
-    val amount: Column<Float> = float("amount")
+    val toValue: Column<Double> = double("to_value")
+    val rate: Column<Double> = double("rate")
     val createdAt = datetime("created_at").clientDefault{ LocalDateTime.now() }
 
     fun toDomain(row: ResultRow): Conversion {
@@ -20,8 +22,10 @@ internal object Conversions : LongIdTable() {
             id = row[Conversions.id].value,
             user = row[Conversions.user],
             from = row[Conversions.from].toString(),
+            fromValue = row[Conversions.fromValue].toDouble(),
             to = row[Conversions.to].toString(),
-            amount = row[Conversions.amount].toFloat(),
+            toValue = row[Conversions.toValue].toDouble(),
+            rate = row[Conversions.rate].toDouble(),
             createdAt = row[Conversions.createdAt],
         )
     }
@@ -40,8 +44,10 @@ class ConversionRepository(private val dataSource: DataSource) {
             Conversions.insertAndGetId { row ->
                 row[Conversions.user] = conversion.user
                 row[Conversions.from] = conversion.from
+                row[Conversions.fromValue] = conversion.fromValue
                 row[Conversions.to] = conversion.to
-                row[Conversions.amount] = conversion.amount
+                row[Conversions.toValue] = conversion.toValue
+                row[Conversions.rate] = conversion.rate
                 row[Conversions.createdAt] = LocalDateTime.now()
             }.value
         }

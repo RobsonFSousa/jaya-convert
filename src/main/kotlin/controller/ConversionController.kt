@@ -12,7 +12,7 @@ class ConversionController(private val conversionService: ConversionService) {
             .check({ it.conversion != null })
             .check({ !it.conversion?.from.isNullOrBlank() })
             .check({ !it.conversion?.to.isNullOrBlank() })
-            .check({ it.conversion?.amount?.compareTo(0.0) ?: 1 > 0 })
+            .check({ it.conversion?.fromValue?.compareTo(0.0) ?: 1 > 0 })
             .get().conversion?.also { conversion ->
                 conversionService.create(conversion).apply {
                     ctx.json(ConversionDTO(this))
