@@ -25,16 +25,18 @@ class AppConfig : KoinComponent {
                 allModules,
                 KoinProperties(true, true)
         )
+        val serverPort = getProperty("server_port") as Int
+        val context = getProperty("context") as String
         this.configureMapper()
         val app = Javalin.create { config ->
             config.apply {
                 enableWebjars()
                 enableCorsForAllOrigins()
                 contextPath = getProperty("context")
-                //addStaticFiles("/swagger")
-                //addSinglePageRoot("","/swagger/swagger-ui.html")
+                addStaticFiles("/swagger")
+                addSinglePageRoot("","/swagger/swagger-ui.html")
                 server {
-                    Server(getProperty("server_port") as Int)
+                    Server(serverPort)
                 }
             }
         }.events {
@@ -44,6 +46,9 @@ class AppConfig : KoinComponent {
         }
         router.register(app)
         ErrorExceptionMapping.register(app)
+
+        println("Check out Swagger UI docs at http://localhost:${serverPort}${context}/swagger-ui")
+
         return app
     }
 
